@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+env/
+venv/
+ENV/
+
+# VSCode settings
+.vscode/
+
+# Database files (nếu dùng SQLite)
+*.db
+*.sqlite3
+
+# Flask cache / instance
+instance/
+*.log
+
+# OS generated
+.DS_Store
+Thumbs.db
