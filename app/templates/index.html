@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - HuuTinh Shop</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+
+
+</head>
+<body>
+    <header>
+        <div class="logo">HuuTinh Shop</div>
+        <nav>
+            <a href="#">Trang chủ</a>
+            <a href="#">Sản phẩm</a>
+            <a href="#">Liên hệ</a>
+            <a href="#">Giỏ hàng</a>
+        </nav>
+    </header>
+
+    <section class="banner">
+        
+        <h1>Chào mừng đến với HuuTinh Shop</h1>
+        <p>Chuyên cung cấp sản phẩm chất lượng, giá tốt!</p>
+        <a href="#" class="btn">Xem sản phẩm</a>
+        <img src="../static/images/banner.png" alt="banner" />
+    </section>
+
+    <section class="products">
+        <h2>Sản phẩm nổi bật</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='img/product1.jpg') }}" alt="Sản phẩm 1">
+                <h3>Sản phẩm 1</h3>
+                <p>Giá: 199.000₫</p>
+                <a href="#" class="btn">Mua ngay</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
+                <h3>Sản phẩm 2</h3>
+                <p>Giá: 299.000₫</p>
+                <a href="#" class="btn">Mua ngay</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
+                <h3>Sản phẩm 2</h3>
+                <p>Giá: 299.000₫</p>
+                <a href="#" class="btn">Mua ngay</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
+                <h3>Sản phẩm 2</h3>
+                <p>Giá: 299.000₫</p>
+                <a href="#" class="btn">Mua ngay</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='img/product3.jpg') }}" alt="Sản phẩm 3">
+                <h3>Sản phẩm 3</h3>
+                <p>Giá: 399.000₫</p>
+                <a href="#" class="btn">Mua ngay</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 HuuTinh Shop. All rights reserved.</p>
+    </footer>
+</body>
+</html>

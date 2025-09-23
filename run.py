@@ -1,7 +1,7 @@
 from flask import Flask, render_template
-from models import db
+from app.models import db
 
-app = Flask(__name__)
+app = Flask(__name__,template_folder='app/templates',static_folder='app/static')
 
 # Kết nối MySQL
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:123456@localhost/huutinhdoor"
