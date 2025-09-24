@@ -14,10 +14,13 @@
     <header>
         <div class="logo">HuuTinh Door</div>
         <nav>
-            <a href="#">Trang chủ</a>
-            <a href="#">Sản phẩm</a>
-            <a href="#">Liên hệ</a>
-            <a href="#">Giỏ hàng</a>
+            <a href="{{ url_for('main.index') }}">Trang chủ</a>
+            <a href="{{ url_for('main.cua_nhom') }}">Cửa nhôm</a>
+            <a href="{{ url_for('main.tu_nhom') }}">Tủ nhôm</a>
+            <a href="{{ url_for('main.kinh_cuong_luc') }}">Kính cường lực</a>
+            <a href="{{ url_for('main.san_pham') }}">Sản phẩm</a>
+            <a href="{{ url_for('main.lien_he') }}">Liên hệ</a>
+
         </nav>
     </header>
 
@@ -62,6 +65,30 @@
     <section class="products">
         <h2>Sản phẩm nổi bật</h2>
         <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <h2>{{ product.name }}</h2>
+                {% for img in product.images %}
+                {% if img.is_main %}
+                <div class="product-image">
+                    <img src="{{ img.url }}" alt="{{ img.alt_text }}">
+                </div>
+                {% endif %}
+                {% endfor %}
+
+                <p>Giá:  {{  product.price }}đ</p>
+                <p>{{ product.description }}</p>
+              
+                <a class="btn" href="{{ url_for('main.product_detail', product_id=product.id) }}">Xem thêm</a>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    </section>
+    <section class="products">
+        <h2>Các công trình</h2>
+        <div class="product-grid">
             <div class="product-card">
                 <img src="{{ url_for('static', filename='img/product1.jpg') }}" alt="Sản phẩm 1">
                 <h3>Sản phẩm 1</h3>
@@ -92,28 +119,6 @@
                 <p>Giá: 399.000₫</p>
                 <a href="#" class="btn">Mua ngay</a>
             </div>
-        </div>
-    </section>
-    <section class="products">
-        <h2>Các công trình</h2>
-        <div class="product-grid">
-            {% for product in products %}
-            <div class="product-card">
-                <h2>{{ product.name }}</h2>
-                {% for img in product.images %}
-                {% if img.is_main %}
-                <div class="product-image">
-                    <img src="{{ img.url }}" alt="{{ img.alt_text }}">
-                </div>
-                {% endif %}
-                {% endfor %}
-
-                <p>Price: ${{ product.price }}</p>
-                <p>{{ product.description }}</p>
-
-
-            </div>
-            {% endfor %}
         </div>
     </section>
     <footer>

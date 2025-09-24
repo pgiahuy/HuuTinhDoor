@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div class="logo">HuuTinh Door</div>
+        <nav>
+            <a href="{{ url_for('main.index') }}">Trang chủ</a>
+            <a href="{{ url_for('main.cua_nhom') }}">Cửa nhôm</a>
+            <a href="{{ url_for('main.tu_nhom') }}">Tủ nhôm</a>
+            <a href="{{ url_for('main.kinh_cuong_luc') }}">Kính cường lực</a>
+            <a href="{{ url_for('main.san_pham') }}">Sản phẩm</a>
+            <a href="{{ url_for('main.lien_he') }}">Liên hệ</a>
+        </nav>
+    </header>
+</body>
+</html>

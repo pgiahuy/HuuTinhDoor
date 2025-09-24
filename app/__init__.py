@@ -10,7 +10,6 @@ def create_app():
 
     db.init_app(app)  
 
-    # import route
     from app.routes import main
     app.register_blueprint(main)
 

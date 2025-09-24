@@ -26,6 +26,13 @@
     padding-left: 0;
 }
 
+.footer-content p{
+    margin: 0;
+    padding: 5px;
+    padding-left: 0;
+}
+
+
 .footer-content a{
     text-decoration: none;
     color: white;
@@ -33,3 +40,8 @@
     padding: 5px;
     padding-left: 0;
 }
+
+.footer-content a:hover{
+   color: rgb(140, 186, 23);
+}
+

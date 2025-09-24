@@ -1,7 +1,7 @@
 from . import db
 
 class Product(db.Model):
-    __tablename__ = 'products'   # trùng với bảng có sẵn trong Workbench
+    __tablename__ = 'products'   
     id = db.Column('idproduct',db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     price = db.Column(db.Float)

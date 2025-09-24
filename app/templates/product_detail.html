@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/product_detail.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <div class="logo">HuuTinh Door</div>
+        <nav>
+            <a href="{{ url_for('main.index') }}">Trang chủ</a>
+            <a href="{{ url_for('main.cua_nhom') }}">Cửa nhôm</a>
+            <a href="{{ url_for('main.tu_nhom') }}">Tủ nhôm</a>
+            <a href="{{ url_for('main.kinh_cuong_luc') }}">Kính cường lực</a>
+            <a href="{{ url_for('main.san_pham') }}">Sản phẩm</a>
+            <a href="{{ url_for('main.lien_he') }}">Liên hệ</a>
+        </nav>
+    </header>
+    <section class="sub-banner">
+        <h1>{{ product.name }} </h1>
+        <p>Thông tin chi tiết về sản phẩm</p>
+        <a href="{{ url_for('main.index') }}" class="btn">Quay lại trang chủ</a>
+    </section>
+
+    <section class="product-detail">
+        <div class="image-details">
+            {% for img in product.images %}
+            {% if img.is_main %}
+            <div class="product-image-main">
+                <img id="main-image" src="{{ img.url }}" alt="{{ img.alt_text }}">
+            </div>
+            {% endif %}
+            {% endfor %}
+            <div class="product-images-sub">
+                {% for img in product.images %}
+                {% if not img.is_main %}
+                <div class="product-image-sub">
+                    <img class="sub-image" src="{{ img.url }}" alt="{{ img.alt_text }}">
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="product-info">
+            <h2>{{ product.name }}</h2>
+            <p>Giá: {{ product.price }}đ</p>
+            <p>{{ product.description }}</p>
+            <a href="#" class="btn">Mua ngay</a>
+        </div>
+    </section>
+    <script>
+        // Lấy ảnh chính
+        const mainImage = document.getElementById("main-image");
+        // Lấy tất cả ảnh phụ
+        const subImages = document.querySelectorAll(".sub-image");
+
+        subImages.forEach(img => {
+            img.addEventListener("click", () => {
+                // Đổi src của ảnh chính
+                const temp = mainImage.src;
+                mainImage.src = img.src;
+
+                // Hoán đổi ảnh: đưa ảnh cũ xuống vị trí ảnh phụ vừa click
+                img.src = temp;
+            });
+        });
+    </script>
+</body>
+
+</html>
