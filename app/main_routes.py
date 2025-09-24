@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template
 from .models import Product
 
+
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    products = Product.query.all()  # lấy sản phẩm từ DB Workbench
+    products = Product.query.all()  # lấy sp từ Workbench
     return render_template('index.html', products=products)
 
 @main.route('/tu_nhom')
@@ -30,7 +31,7 @@ def product_detail(product_id):
     if not product:
         return "Sản phẩm không tồn tại", 404
     
-    # # Lấy sản phẩm liên quan (cùng category, khác id)
+    # # Lấy sp liên quan (cùng category, khác id)
     # related_products = Product.query.filter(
     #     Product.category_id == product.category_id,
     #     Product.id != product.id
