@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "rzrNtDh5YSyl0WCkxjMGu5BwlzbibjiOdbOvsJA/6NBJiDsRyMeYaRU6BRuDe1m4TenRuMIlYLUTnNzEfFgLDQ==",
+  "success": true,
+  "projectFilePath": "e:\\Projects\\HuuTinhDoor\\HuuTinhDoor\\HuuTinhDoor.sqlproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\HUY\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\HUY\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net20\\1.0.3\\microsoft.netframework.referenceassemblies.net20.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
