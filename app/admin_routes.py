@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from .models import Product,ProductImage
+from .models import Product,ProductImage,Category,SubCategory
 import cloudinary.uploader
 
 from . import db
@@ -23,54 +23,21 @@ def login():
     
     return render_template("login.html")
 
-@admin.route("/dashboard", methods=["GET", "POST"])
+@admin.route("/dashboard")
 def dashboard():
+    
     if not session.get("is_admin"):
         flash("Bạn cần đăng nhập trước!", "warning")
         return redirect(url_for("admin.login"))
 
-    if request.method == "POST":
-        name = request.form.get("name")
-        description = request.form.get("description")
-        price = request.form.get("price")
-        category_id = request.form.get("category_id")
-        file = request.files.get("image")  # file input name="image"
-        is_main = request.form.get("is_main") == "on"
 
-        if not name or not price:
-            flash("Tên và giá sản phẩm là bắt buộc!", "danger")
-            return redirect(url_for("admin.dashboard"))
-
-        # 1. tap Product moi
-        product = Product(
-            name=name,
-            description=description,
-            price=float(price),
-            category_id=int(category_id) if category_id else None
-        )
-        db.session.add(product)
-        db.session.commit()
-
-        # 2. Upload ảnh lên Cloudinary
-        if file:
-            upload_result = cloudinary.uploader.upload(file)
-            image_url = upload_result.get("secure_url")
-
-            # 3. Tạo ProductImage
-            product_image = ProductImage(
-                product_id=product.id,
-                url=image_url,
-                alt_text=name,
-                is_main=is_main
-            )
-            db.session.add(product_image)
-            db.session.commit()
-
-        flash("Thêm sản phẩm thành công!", "success")
-        return redirect(url_for("admin.dashboard"))
-
+    categories = Category.query.all()
+    subcategories = SubCategory.query.all()
     products = Product.query.all()
-    return render_template("admin.html", products=products)
+    return render_template("admin.html",
+                            products=products,
+                            categories=categories,
+                            subcategories=subcategories)
 
 @admin.route("/logout")
 def logout():
@@ -82,30 +49,112 @@ def logout():
 @admin.route("/add_product", methods=["GET", "POST"])
 def add_product():
     if not session.get("is_admin"):
-        flash("Bạn cần đăng nhập trước!", "warning")
+        flash("Bạn cần đăng nhập!", "warning")
         return redirect(url_for("admin.login"))
     
+
     if request.method == "POST":
         name = request.form.get("name")
         description = request.form.get("description")
         price = request.form.get("price")
         category_id = request.form.get("category_id")
+        subcategory_id = request.form.get("subcategory_id")
+        files = request.files.getlist("images")
+        main_index = int(request.form.get("main_image_index", 0))
 
-        if not name or not price:
-            flash("Tên và giá sản phẩm là bắt buộc!", "danger")
+        if not name or not price or not category_id or not subcategory_id:
+            flash("Tên, giá, danh mục và loại sản phẩm là bắt buộc!", "danger")
             return redirect(url_for("admin.add_product"))
 
-        # tạo Product mới
+        # Tạo Product mới
         product = Product(
             name=name,
             description=description,
             price=float(price),
-            category_id=int(category_id) if category_id else None
+            category_id=int(category_id),
+            subcategory_id=int(subcategory_id)
         )
         db.session.add(product)
         db.session.commit()
 
+
+        folder_path = f"HuuTinhDoor/products/{product.subcategory.name}"
+        
+        # Upload nhiều ảnh
+        for idx, file in enumerate(files):
+            if file and file.filename != "":
+                result = cloudinary.uploader.upload(file, folder=folder_path)
+                image = ProductImage(
+                    product_id=product.id,
+                    url=result['secure_url'],
+                    public_id=result['public_id'],
+                    is_main=(idx == main_index)
+                )
+                db.session.add(image)
+
+        db.session.commit()
         flash("Thêm sản phẩm thành công!", "success")
         return redirect(url_for("admin.dashboard"))
+    
+   
 
-    return render_template("add_product.html")
+    return render_template(
+        "add_product.html",
+    )
+
+
+@admin.route("/edit_product/<int:product_id>", methods=["GET", "POST"])
+def edit_product(product_id):
+    if not session.get("is_admin"):
+        flash("Bạn cần đăng nhập!", "warning")
+        return redirect(url_for("admin.login"))
+
+    product = Product.query.get_or_404(product_id)
+
+    if request.method == "POST":
+        product.name = request.form.get("name")
+        product.price = float(request.form.get("price"))
+        product.description = request.form.get("description")
+        product.category_id = int(request.form.get("category_id")) if request.form.get("category_id") else None
+
+        if "image" in request.files:
+            file = request.files["image"]
+            if file.filename != "":
+                # Xóa ảnh cũ
+                for img in product.images:
+                    cloudinary.uploader.destroy(img.public_id)
+                    db.session.delete(img)
+
+                # Upload ảnh mới
+                result = cloudinary.uploader.upload(file)
+                image = ProductImage(
+                    url=result['secure_url'],
+                    public_id=result['public_id'],
+                    is_main=bool(request.form.get("is_main")),
+                    product_id=product.id
+                )
+                db.session.add(image)
+
+        db.session.commit()
+        flash("Cập nhật sản phẩm thành công!", "success")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template("edit_product.html", product=product)
+
+# --- DELETE PRODUCT ---
+@admin.route("/delete_product/<int:product_id>")
+def delete_product(product_id):
+    if not session.get("is_admin"):
+        flash("Bạn cần đăng nhập!", "warning")
+        return redirect(url_for("admin.login"))
+
+    product = Product.query.get_or_404(product_id)
+
+    for img in product.images:
+        cloudinary.uploader.destroy(img.public_id)
+        db.session.delete(img)
+
+    db.session.delete(product)
+    db.session.commit()
+    flash("Xóa sản phẩm thành công!", "success")
+    return redirect(url_for("admin.dashboard"))

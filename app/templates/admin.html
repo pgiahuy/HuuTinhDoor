@@ -11,54 +11,170 @@
     <header>
         <h1>Admin Dashboard</h1>
         <div class="header-actions">
-            <p>Chào mừng bạn, {{ 'Admin' if session.get('is_admin') else 'Guest' }}</p>
             <a href="{{ url_for('admin.logout') }}" class="btn-logout">Đăng xuất</a>
         </div>
     </header>
 
+    <nav class="navbar">
+        <button id="toggleFormBtn" class="btn-toggle-form">Thêm sản phẩm</button>
+    </nav>
     <main class="container">
-        <section class="form-container">
+
+
+
+        <!-- FORM THÊM SẢN PHẨM -->
+        <section class="form-container" id="addProductForm" style="display:none;">
+            <button type="button" id="closeFormBtn" class="btn-close">✖</button>
             <h2>Thêm sản phẩm</h2>
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin.add_product') }}">
                 <label>Tên sản phẩm:</label>
                 <input type="text" name="name" required>
 
                 <label>Giá:</label>
                 <input type="number" step="0.01" name="price" required>
 
-                <label>Category ID:</label>
-                <input type="number" name="category_id">
+                <!-- CATEGORY -->
+                <label>Danh mục:</label>
+                <select name="category_id" id="categorySelect" required>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+
+                </select>
+
+                <!-- SUBCATEGORY -->
+                <label>Loại sản phẩm:</label>
+                <select name="subcategory_id" id="subcategorySelect" required>
+                    {% for sub in subcategories %}
+                    <option value="{{ sub.id }}" data-category="{{ sub.category_id }}">{{ sub.name }}</option>
+                    {% endfor %}
+                </select>
 
                 <label>Mô tả:</label>
                 <textarea name="description" rows="3"></textarea>
 
-                <label>Ảnh chính:</label>
-                <input type="file" name="image">
+                <label>Ảnh sản phẩm:</label>
+                <input type="file" name="images" multiple id="imagesInput">
 
-                <label class="checkbox-label">
-                    <input type="checkbox" name="is_main"> Ảnh chính?
-                </label>
+                <div id="previewContainer" class="preview-container"></div>
+
+                <input type="hidden" name="main_image_index" id="main_image_index">
 
                 <input type="submit" value="Thêm sản phẩm" class="btn-submit">
             </form>
         </section>
 
+        <!-- DANH SÁCH SẢN PHẨM -->
         <section class="list-container">
             <h2>Danh sách sản phẩm</h2>
             <div class="product-list">
                 {% for p in products %}
                 <div class="product-card">
-                    {% if p.images|length > 0 %}
-                    <img src="{{ p.images[0].url }}" alt="{{ p.name }}">
+                    {% set main_image = p.images|selectattr("is_main")|first %}
+                    {% if main_image %}
+                    <img src="{{ main_image.url }}" alt="{{ p.name }}">
                     {% endif %}
                     <h3>{{ p.name }}</h3>
                     <p>Giá: ${{ p.price }}</p>
                     <p>Category: {{ p.category_id }}</p>
+                    <div>
+                        <a href="{{ url_for('admin.edit_product', product_id=p.id) }}" class="btn-edit">Sửa</a>
+                        <a href="{{ url_for('admin.delete_product', product_id=p.id) }}" class="btn-delete"
+                            onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         </section>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categorySelect = document.getElementById('categorySelect');
+            const subcategorySelect = document.getElementById('subcategorySelect');
+
+            function filterSubcategories() {
+                const selectedCategory = categorySelect.value;
+                let firstVisible = null;
+
+                Array.from(subcategorySelect.options).forEach(option => {
+                    if (!option.value) return; // bỏ qua option "Chọn loại sản phẩm"
+
+                    if (option.dataset.category === selectedCategory) {
+                        option.style.display = 'block';
+                        if (!firstVisible) firstVisible = option;
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+
+                // chọn mặc định option đầu tiên còn hiển thị
+                subcategorySelect.value = firstVisible ? firstVisible.value : "";
+            }
+
+            // lọc lần đầu khi load trang
+            filterSubcategories();
+
+            // lọc khi thay đổi category
+            categorySelect.addEventListener('change', filterSubcategories);
+
+            // --- Bật/Tắt form ---
+            const toggleBtn = document.getElementById('toggleFormBtn');
+            const formSection = document.getElementById('addProductForm');
+            const closeBtn = document.getElementById('closeFormBtn');
+
+            toggleBtn.addEventListener('click', () => {
+                formSection.style.display = 'block';
+                window.scrollTo({ top: formSection.offsetTop, behavior: 'smooth' });
+            });
+
+            closeBtn.addEventListener('click', () => {
+                formSection.style.display = 'none';
+            });
+
+            // --- PREVIEW ẢNH ---
+            const input = document.getElementById('imagesInput');
+            const previewContainer = document.getElementById('previewContainer');
+            const mainIndexInput = document.getElementById('main_image_index');
+
+            input.addEventListener('change', () => {
+                previewContainer.innerHTML = '';
+                const files = input.files;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.classList.add('preview-item');
+                        div.style.position = 'relative';
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('preview-img');
+                        div.appendChild(img);
+
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = 'main_image';
+                        radio.value = i;
+                        radio.classList.add('radio-main');
+                        if (i === 0) radio.checked = true;
+
+                        radio.addEventListener('change', () => {
+                            mainIndexInput.value = i;
+                        });
+
+                        div.appendChild(radio);
+                        previewContainer.appendChild(div);
+                        mainIndexInput.value = 0;
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

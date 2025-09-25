@@ -36,7 +36,7 @@
     display: flex;
     flex-direction: row;
     gap:5px;
-    justify-content: space-between;
+    justify-content: start;
     margin-top: 10px;
 }
 .product-image-sub{
