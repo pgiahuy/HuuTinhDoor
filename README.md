@@ -13,7 +13,7 @@ The application is built **for learning purposes**.
 
 ## ⚙️ Technologies Used  
 - **Frontend**: HTML, CSS, JavaScript  
-- **Backend**: Flask (Python)  
+- **Backend**: Flask
 - **Database**: MySQL  
 - **ORM**: SQLAlchemy  
 - **Storage**: Cloudinary  
