@@ -1,27 +1,36 @@
-# HuuTinhDoor
+# 🏪 HuuTinhDoor - Web Application Store  
 
-Introduction
+<p align="center">
+  <img src="https://img.icons8.com/color/96/000000/shop.png" width="100" alt="Logo"/>
+</p>
 
-This is a web application that allows users to:
+## 📖 Introduction  
+**HuuTinhDoor** is a simple web application that allows users to:  
+- 👤 Register and log in to an account  
+- 🛍 Manage products (add, edit, delete, list, filter)  
+- 🖼 Upload and store product images on **Cloudinary**  
+- 📞 Contact via **Zalo API** or phone number  
 
-Register and log in to an account
+The application is built **for learning purposes**.  
 
-Manage products (add, edit, delete, display list, filter)
+---
 
-Upload and store product images on Cloudinary
+## ⚙️ Technologies Used  
+- **Frontend**: HTML, CSS, JavaScript  
+- **Backend**: Flask (Python)  
+- **Database**: MySQL  
+- **ORM**: SQLAlchemy  
+- **Storage**: Cloudinary  
 
-Contact via Zalo API or phone number
+---
 
-The application is built for learning purposes.
+## 🚀 Features (Demo Screenshots – optional)  
+👉 *(You can add screenshots of your app here later)*  
 
-Technologies Used
+---
 
-Frontend: HTML, CSS, JavaScript
-
-Backend: Flask (Python)
-
-Database: MySQL
-
-ORM: SQLAlchemy
-
-Storage: Cloudinar
+## 📌 Installation & Usage  
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/your-repo/huutinhdoor.git
+   cd huutinhdoor
