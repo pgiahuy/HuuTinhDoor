@@ -87,39 +87,27 @@
         </div>
 
     </section>
-    <section class="products">
+    <section class="projects">
         <h2>Các công trình</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ url_for('static', filename='img/product1.jpg') }}" alt="Sản phẩm 1">
-                <h3>Sản phẩm 1</h3>
-                <p>Giá: 199.000₫</p>
-                <a href="#" class="btn">Mua ngay</a>
+        <div class="project-grid">
+            {% for project in projects %}
+            <div class="project-card">
+                <h2>{{ project.name }}</h2>
+                {% for img in project.images %}
+                {% if img.is_main %}
+                <div class="project-image">
+                    <img src="{{ img.url }}" alt="{{ img.alt_text }}">
+                </div>
+                {% endif %}
+                {% endfor %}
+
+                <p>Giá:  {{  project.price }}đ</p>
+                <p>{{ project.description }}</p>
+
+                <a class="btn" href="{{ url_for('main.project_detail', project_id=project.id) }}">Xem thêm</a>
+
             </div>
-            <div class="product-card">
-                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
-                <h3>Sản phẩm 2</h3>
-                <p>Giá: 299.000₫</p>
-                <a href="#" class="btn">Mua ngay</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
-                <h3>Sản phẩm 2</h3>
-                <p>Giá: 299.000₫</p>
-                <a href="#" class="btn">Mua ngay</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ url_for('static', filename='img/product2.jpg') }}" alt="Sản phẩm 2">
-                <h3>Sản phẩm 2</h3>
-                <p>Giá: 299.000₫</p>
-                <a href="#" class="btn">Mua ngay</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ url_for('static', filename='img/product3.jpg') }}" alt="Sản phẩm 3">
-                <h3>Sản phẩm 3</h3>
-                <p>Giá: 399.000₫</p>
-                <a href="#" class="btn">Mua ngay</a>
-            </div>
+            {% endfor %}
         </div>
     </section>
     <footer>

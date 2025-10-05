@@ -4,11 +4,12 @@ from wtforms import StringField, FloatField, TextAreaField, BooleanField, Submit
 from wtforms.validators import DataRequired
 
 # --- CATEGORY / SUBCATEGORY ---
+
 class Category(db.Model):
     __tablename__ = 'category'
-    id = db.Column(db.Integer, primary_key=True)  # tự tăng
-    name = db.Column(db.String(100), nullable=False)  # Ví dụ: Cửa, Tủ
-    subcategories = db.relationship('SubCategory', backref='category', lazy=True, cascade="all, delete-orphan")
+    id =db.Column(db.Integer, primary_key=True)
+    name  = db.Column(db.String(100), nullable=False)
+    subcategories = db.relationship('SubCategory',  backref='category', lazy=True, cascade="all, delete-orphan")
 
 class SubCategory(db.Model):
     __tablename__ = 'subcategory'
@@ -41,9 +42,10 @@ class ProductImage(db.Model):
 class Project(db.Model):
     __tablename__ = 'project'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    images = db.relationship('ProjectImage', backref='project', lazy=True, cascade="all, delete-orphan")
+    images = db.relationship("ProjectImage", backref="project", lazy=True, cascade="all, delete-orphan")
+
 
 class ProjectImage(db.Model):
     __tablename__ = 'project_images'

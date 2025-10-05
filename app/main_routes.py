@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from .models import Product
+from .models import Product,Project
 
 
 main = Blueprint('main', __name__)
@@ -7,7 +7,8 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     products = Product.query.all()  # lấy sp từ Workbench
-    return render_template('index.html', products=products)
+    projects = Project.query.all()  # lấy sp từ Workbench
+    return render_template('index.html', products=products, projects = projects)
 
 @main.route('/tu_nhom')
 def tu_nhom():
@@ -39,3 +40,11 @@ def product_detail(product_id):
     
     return render_template('product_detail.html', product=product)#, related_products=related_products)
 
+
+@main.route('/project/<int:project_id>')
+def project_detail(project_id):
+    project = Project.query.get(project_id)
+    if not project:
+        return "Công trình không tồn tại", 404
+
+    return render_template('project_detail.html', project=project)  # , related_products=related_products)

@@ -16,15 +16,15 @@
     </header>
 
     <nav class="navbar">
-        <button id="toggleFormBtn" class="btn-toggle-form">Thêm sản phẩm</button>
+        <button id="toggleFormProductBtn" class="btn-toggle-form">Thêm sản phẩm</button>
+        <button id="toggleFormProjectBtn" class="btn-toggle-form">Thêm công trình</button>
     </nav>
+
     <main class="container">
-
-
 
         <!-- FORM THÊM SẢN PHẨM -->
         <section class="form-container" id="addProductForm" style="display:none;">
-            <button type="button" id="closeFormBtn" class="btn-close">✖</button>
+            <button type="button" id="CloseProductFormBtn" class="btn-close">✖</button>
             <h2>Thêm sản phẩm</h2>
             <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin.add_product') }}">
                 <label>Tên sản phẩm:</label>
@@ -33,16 +33,13 @@
                 <label>Giá:</label>
                 <input type="number" step="0.01" name="price" required>
 
-                <!-- CATEGORY -->
                 <label>Danh mục:</label>
                 <select name="category_id" id="categorySelect" required>
                     {% for cat in categories %}
                     <option value="{{ cat.id }}">{{ cat.name }}</option>
                     {% endfor %}
-
                 </select>
 
-                <!-- SUBCATEGORY -->
                 <label>Loại sản phẩm:</label>
                 <select name="subcategory_id" id="subcategorySelect" required>
                     {% for sub in subcategories %}
@@ -54,15 +51,37 @@
                 <textarea name="description" rows="3"></textarea>
 
                 <label>Ảnh sản phẩm:</label>
-                <input type="file" name="images" multiple id="imagesInput">
+                <input type="file" name="images" multiple id="imagesProductInput">
 
-                <div id="previewContainer" class="preview-container"></div>
+                <div id="previewProductContainer" class="preview-container"></div>
 
-                <input type="hidden" name="main_image_index" id="main_image_index">
-
+                <input type="hidden" name="main_image_index" id="main_image_product_index">
                 <input type="submit" value="Thêm sản phẩm" class="btn-submit">
             </form>
         </section>
+
+
+        <!-- FORM THÊM CÔNG TRÌNH -->
+        <section class="form-container" id="addProjectForm" style="display:none;">
+            <button type="button" id="closeProjectFormBtn" class="btn-close">✖</button>
+            <h2>Thêm công trình</h2>
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin.add_project') }}">
+                <label>Tên công trình:</label>
+                <input type="text" name="name" required>
+
+                <label>Mô tả:</label>
+                <textarea name="description" rows="3"></textarea>
+
+                <label>Ảnh công trình:</label>
+                <input type="file" name="images" multiple id="imagesProjectInput">
+
+                <div id="previewProjectContainer" class="preview-container"></div>
+
+                <input type="hidden" name="main_image_index" id="main_image_project_index">
+                <input type="submit" value="Thêm công trình" class="btn-submit">
+            </form>
+        </section>
+
 
         <!-- DANH SÁCH SẢN PHẨM -->
         <section class="list-container">
@@ -90,6 +109,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            /* ----------------- Lọc subcategory ----------------- */
             const categorySelect = document.getElementById('categorySelect');
             const subcategorySelect = document.getElementById('subcategorySelect');
 
@@ -98,8 +119,6 @@
                 let firstVisible = null;
 
                 Array.from(subcategorySelect.options).forEach(option => {
-                    if (!option.value) return; // bỏ qua option "Chọn loại sản phẩm"
-
                     if (option.dataset.category === selectedCategory) {
                         option.style.display = 'block';
                         if (!firstVisible) firstVisible = option;
@@ -108,46 +127,56 @@
                     }
                 });
 
-                // chọn mặc định option đầu tiên còn hiển thị
                 subcategorySelect.value = firstVisible ? firstVisible.value : "";
             }
 
-            // lọc lần đầu khi load trang
             filterSubcategories();
-
-            // lọc khi thay đổi category
             categorySelect.addEventListener('change', filterSubcategories);
 
-            // --- Bật/Tắt form ---
-            const toggleBtn = document.getElementById('toggleFormBtn');
-            const formSection = document.getElementById('addProductForm');
-            const closeBtn = document.getElementById('closeFormBtn');
+            /* ----------------- Toggle Form Sản phẩm ----------------- */
+            const toggleFormProductBtn = document.getElementById('toggleFormProductBtn');
+            const addProductForm = document.getElementById('addProductForm');
+            const closeProductFormBtn = document.getElementById('CloseProductFormBtn');
 
-            toggleBtn.addEventListener('click', () => {
-                formSection.style.display = 'block';
-                window.scrollTo({ top: formSection.offsetTop, behavior: 'smooth' });
+            toggleFormProductBtn.addEventListener('click', () => {
+                addProjectForm.style.display = 'none';
+                addProductForm.style.display = 'block';
+                // window.scrollTo({ top: addProductForm.offsetTop -50, behavior: 'smooth' });
             });
 
-            closeBtn.addEventListener('click', () => {
-                formSection.style.display = 'none';
+            closeProductFormBtn.addEventListener('click', () => {
+                addProductForm.style.display = 'none';
             });
 
-            // --- PREVIEW ẢNH ---
-            const input = document.getElementById('imagesInput');
-            const previewContainer = document.getElementById('previewContainer');
-            const mainIndexInput = document.getElementById('main_image_index');
+            /* ----------------- Toggle Form Công trình ----------------- */
+            const toggleFormProjectBtn = document.getElementById('toggleFormProjectBtn');
+            const addProjectForm = document.getElementById('addProjectForm');
+            const closeProjectFormBtn = document.getElementById('closeProjectFormBtn');
 
-            input.addEventListener('change', () => {
-                previewContainer.innerHTML = '';
-                const files = input.files;
+            toggleFormProjectBtn.addEventListener('click', () => {
+                addProductForm.style.display = 'none';
+                addProjectForm.style.display = 'block';
+                // window.scrollTo({ top: addProjectForm.offsetTop-50, behavior: 'smooth' });
+            });
+
+            closeProjectFormBtn.addEventListener('click', () => {
+                addProjectForm.style.display = 'none';
+
+            });
+
+            /* ----------------- Preview Ảnh Sản phẩm ----------------- */
+            const productInput = document.getElementById('imagesProductInput');
+            const productPreview = document.getElementById('previewProductContainer');
+            const productMainIndex = document.getElementById('main_image_product_index');
+
+            productInput.addEventListener('change', () => {
+                productPreview.innerHTML = '';
+                const files = productInput.files;
                 for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
                     const reader = new FileReader();
-
                     reader.onload = (e) => {
                         const div = document.createElement('div');
                         div.classList.add('preview-item');
-                        div.style.position = 'relative';
 
                         const img = document.createElement('img');
                         img.src = e.target.result;
@@ -156,21 +185,58 @@
 
                         const radio = document.createElement('input');
                         radio.type = 'radio';
-                        radio.name = 'main_image';
+                        radio.name = 'main_image_product';
                         radio.value = i;
                         radio.classList.add('radio-main');
                         if (i === 0) radio.checked = true;
 
                         radio.addEventListener('change', () => {
-                            mainIndexInput.value = i;
+                            productMainIndex.value = i;
                         });
 
                         div.appendChild(radio);
-                        previewContainer.appendChild(div);
-                        mainIndexInput.value = 0;
+                        productPreview.appendChild(div);
+                        productMainIndex.value = 0;
                     };
+                    reader.readAsDataURL(files[i]);
+                }
+            });
 
-                    reader.readAsDataURL(file);
+            /* ----------------- Preview Ảnh Công trình ----------------- */
+            const projectInput = document.getElementById('imagesProjectInput');
+            const projectPreview = document.getElementById('previewProjectContainer');
+            const projectMainIndex = document.getElementById('main_image_project_index');
+
+            projectInput.addEventListener('change', () => {
+                projectPreview.innerHTML = '';
+                const files = projectInput.files;
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.classList.add('preview-item');
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('preview-img');
+                        div.appendChild(img);
+
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = 'main_image_project';
+                        radio.value = i;
+                        radio.classList.add('radio-main');
+                        if (i === 0) radio.checked = true;
+
+                        radio.addEventListener('change', () => {
+                            projectMainIndex.value = i;
+                        });
+
+                        div.appendChild(radio);
+                        projectPreview.appendChild(div);
+                        projectMainIndex.value = 0;
+                    };
+                    reader.readAsDataURL(files[i]);
                 }
             });
         });

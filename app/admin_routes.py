@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from .models import Product,ProductImage,Category,SubCategory
+from .models import Product, ProductImage, Category, SubCategory, Project, ProjectImage
 import cloudinary.uploader
 
 from . import db
@@ -99,7 +99,54 @@ def add_product():
    
 
     return render_template(
-        "add_product.html",
+        "admin.html"
+    )
+
+
+@admin.route("/add_project", methods=["GET", "POST"])
+def add_project():
+    if not session.get("is_admin"):
+        flash("Bạn cần đăng nhập!", "warning")
+        return redirect(url_for("admin.login"))
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        description = request.form.get("description")
+        files = request.files.getlist("images")
+        main_index = int(request.form.get("main_image_index", 0))
+
+        if not name:
+            flash("Tên là bắt buộc!", "danger")
+            return redirect(url_for("admin.add_project"))
+
+        # Tạo Project mới
+        project = Project(
+            name=name,
+            description=description,
+        )
+        db.session.add(project)
+        db.session.commit()
+
+        folder_path = f"HuuTinhDoor/projects"
+
+        # Upload nhiều ảnh
+        for idx, file in enumerate(files):
+            if file and file.filename != "":
+                result = cloudinary.uploader.upload(file, folder=folder_path)
+                image = ProjectImage(
+                    project_id=project.id,
+                    url=result['secure_url'],
+                    public_id=result['public_id'],
+                    is_main=(idx == main_index)
+                )
+                db.session.add(image)
+
+        db.session.commit()
+        flash("Thêm công trình thành công!", "success")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template(
+        "admin.html"
     )
 
 
