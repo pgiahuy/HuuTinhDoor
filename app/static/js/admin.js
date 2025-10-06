@@ -196,26 +196,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    // xử lý tìm kiếm sản phẩm
+
+
+    //================
+    //=================
+    //=============
+    const productList = document.getElementById("product-list");
+    const projectsList = document.getElementById("project-list");
+
+    // Filter elements
     const categoryFilter = document.getElementById('categoryProductSearch');
     const subcategoryFilter = document.getElementById('subcategoryProductSearch');
     const searchProductByName = document.getElementById("searchProductByName");
-    const productCards = document.querySelectorAll('.product-card');
 
+    // Store fetched data
+    let allProducts = [];
+    let allProjects = [];
+
+    // --- Fetch Products ---
+    fetch("/api/products")
+        .then(res => res.json())
+        .then(data => {
+            allProducts = data.products;
+            renderProducts(allProducts);
+        })
+        .catch(err => console.error(err));
+
+    // --- Fetch Projects ---
+    fetch("/api/projects")
+        .then(res => res.json())
+        .then(data => {
+            allProjects = data.projects;
+            renderProjects(allProjects);
+        })
+        .catch(err => console.error(err));
+
+    // --- Render Products ---
+    function renderProducts(products) {
+        productList.innerHTML = "";
+        products.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "product-card";
+            div.dataset.category = p.category_id;
+            div.dataset.subcategory = p.subcategory_id;
+
+            let mainImg = "";
+            if (p.images && p.images.length) {
+                const main = p.images.find(img => img.is_main) || p.images[0];
+                mainImg = `<img src="${main.url}" alt="${main.alt_text || p.name}">`;
+            }
+
+            div.innerHTML = `
+                ${mainImg}
+                <h3>${p.name}</h3>
+                <p>Giá: $${p.price}</p>
+                <p>Danh mục: ${p.category_name}</p>
+                <p>Loại: ${p.subcategory_name}</p>
+                <div>
+                    <a href="/product/${p.id}" class="btn-detail">Xem</a>
+                    <a href="/admin/edit_product/${p.id}" class="btn-edit">Sửa</a>
+                    <a href="/admin/delete_product/${p.id}" class="btn-delete"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+                </div>
+            `;
+            productList.appendChild(div);
+        });
+    }
+
+    // --- Render Projects ---
+    function renderProjects(projects) {
+        projectsList.innerHTML = "";
+        projects.forEach(pr => {
+            const div = document.createElement("div");
+            div.className = "project-card";
+
+            let mainImg = "";
+            if (pr.images && pr.images.length) {
+                const main = pr.images.find(img => img.is_main) || pr.images[0];
+                mainImg = `<div class="project-image"><img src="${main.url}" alt="${main.alt_text || pr.name}"></div>`;
+            }
+
+            div.innerHTML = `
+                <h2>${pr.name}</h2>
+                ${mainImg}
+                <p>Giá: ${pr.price || "Liên hệ"}</p>
+                <p>${pr.description || ""}</p>
+                <a class="btn" href="/project/${pr.id}">Xem thêm</a>
+            `;
+            projectsList.appendChild(div);
+        });
+    }
+
+    // --- Filter Products ---
     function filterProducts() {
         const txtSearch = searchProductByName.value.toLowerCase();
         const selectedCategory = categoryFilter.value;
         const selectedSubCategory = subcategoryFilter.value;
 
-        productCards.forEach(card => {
-            const name = card.querySelector('h3').textContent.toLowerCase();
-            const matchCategory = !selectedCategory || card.dataset.category === selectedCategory;
-            const matchSubcategory = !selectedSubCategory || card.dataset.subcategory === selectedSubCategory;
-
-            card.style.display = (matchCategory && matchSubcategory && name.includes(txtSearch)) ? 'block' : 'none';
+        const filtered = allProducts.filter(p => {
+            const matchCategory = !selectedCategory || p.category_id.toString() === selectedCategory;
+            const matchSubcategory = !selectedSubCategory || p.subcategory_id.toString() === selectedSubCategory;
+            const matchName = p.name.toLowerCase().includes(txtSearch);
+            return matchCategory && matchSubcategory && matchName;
         });
+
+        renderProducts(filtered);
     }
 
+    // Event listeners
     categoryFilter.addEventListener('change', filterProducts);
     subcategoryFilter.addEventListener('change', filterProducts);
     searchProductByName.addEventListener('input', filterProducts);

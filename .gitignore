@@ -12,11 +12,10 @@ ENV/
 # VSCode settings
 .vscode/
 
-# Database files (nếu dùng SQLite)
-*.db
-*.sqlite3
+# JetBrains IDE
+.idea/
 
-# Flask cache / instance
+# Flask
 instance/
 *.log
 

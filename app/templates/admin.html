@@ -115,26 +115,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="product-list">
-                {% for p in products %}
-                <div class="product-card" data-category="{{ p.category_id }}" data-subcategory="{{ p.subcategory_id }}">
-                    {% set main_image = p.images|selectattr("is_main")|first %}
-                    {% if main_image %}
-                    <img src="{{ main_image.url }}" alt="{{ p.name }}">
-                    {% endif %}
-                    <h3>{{ p.name }}</h3>
-                    <p>Giá: ${{ p.price }}</p>
-                    <p>Danh mục: {{ category_dict[p.category_id] }}</p>
-                    <p>Loại: {{ subcategory_dict[p.subcategory_id] }}</p>
-                    <div>
-                        <a href="{{ url_for('main.product_detail', product_id=p.id) }}" class="btn-detail">Xem</a>
-                        <a href="{{ url_for('admin.edit_product', product_id=p.id) }}" class="btn-edit">Sửa</a>
-                        <a href="{{ url_for('admin.delete_product', product_id=p.id) }}" class="btn-delete"
-                            onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            <div class="product-list" id="product-list"></div>
         </section>
 
         <!-- Tab Công trình -->
@@ -142,27 +123,9 @@
             <div class="project-filter">
 
             </div>
+            <div class="project-list" id="project-list"></div>
 
-            <div class="project-grid">
-            {% for project in projects %}
-            <div class="project-card">
-                <h2>{{ project.name }}</h2>
-                {% for img in project.images %}
-                {% if img.is_main %}
-                <div class="project-image">
-                    <img src="{{ img.url }}" alt="{{ img.alt_text }}">
-                </div>
-                {% endif %}
-                {% endfor %}
 
-                <p>Giá:  {{  project.price }}đ</p>
-                <p>{{ project.description }}</p>
-
-                <a class="btn" href="{{ url_for('main.project_detail', project_id=project.id) }}">Xem thêm</a>
-
-            </div>
-            {% endfor %}
-        </div>
         </section>
 
     </main>

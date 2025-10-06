@@ -33,7 +33,6 @@ def dashboard():
 
     categories = Category.query.all()
     subcategories = SubCategory.query.all()
-    products = Product.query.all()
 
     # Tạo dict mapping để truy xuất nhanh
     category_dict = {c.id: c.name for c in categories}
@@ -42,7 +41,6 @@ def dashboard():
     # products là danh sách sản phẩm từ DB
 
     return render_template("admin.html",
-                            products=products,
                             categories=categories,
                             subcategories=subcategories,
                             category_dict=category_dict,

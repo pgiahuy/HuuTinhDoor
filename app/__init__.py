@@ -5,7 +5,7 @@ import cloudinary
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__, template_folder='templates', static_folder='static')
+    app = Flask(__name__,  static_folder='static',template_folder='templates')
 
     # Import config
     from config import Config
